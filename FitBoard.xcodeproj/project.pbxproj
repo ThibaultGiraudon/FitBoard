@@ -15,9 +15,22 @@
 		CED6BB5E2E8AB44500958E05 /* FitBoard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FitBoard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CE2736D32EAA1C69007B48B9 /* Exceptions for "FitBoard" folder in "FitBoard" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CED6BB5D2E8AB44500958E05 /* FitBoard */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CED6BB602E8AB44500958E05 /* FitBoard */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CE2736D32EAA1C69007B48B9 /* Exceptions for "FitBoard" folder in "FitBoard" target */,
+			);
 			path = FitBoard;
 			sourceTree = "<group>";
 		};
@@ -264,6 +277,7 @@
 				DEVELOPMENT_TEAM = T6PF4S9ABL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitBoard/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app uses health share to display user's runs.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -298,6 +312,7 @@
 				DEVELOPMENT_TEAM = T6PF4S9ABL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = FitBoard/Info.plist;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app uses health share to display user's runs.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
