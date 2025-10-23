@@ -9,8 +9,50 @@ import Foundation
 import Combine
 import HealthKit
 
+struct Workout: Identifiable, Hashable {
+    let id = UUID().uuidString
+    let startDate: Date
+    let endDate: Date
+    let avgHR: Double
+    let distance: Double
+    let duration: Int
+    let kcalBurned: Double
+    let pace: Double
+    var stringPace: String {
+        let paceMinutesPerMeter: Int = Int(self.duration / (Int(self.distance) / 1000)) / 60
+        let paceSecondsPerMeter: Int = Int(self.duration / (Int(self.distance) / 1000)) % 60
+        
+        return "\(paceMinutesPerMeter)'\(paceSecondsPerMeter)\" /km"
+    }
+    let elevationGain: Double
+}
+
 class HealthKitViewModel: ObservableObject {
     @Published var isAuthorized: Bool = false
+    @Published var workouts: [Workout] = []
+    
+    var totalDistance: Int {
+        var distance: Int = 0
+        
+        workouts.forEach { distance += Int($0.distance) }
+        
+        return distance / 1000
+    }
+    
+    var totalTime: String {
+        var time: Int = 0
+        
+        workouts.forEach { time += Int($0.duration) }
+        
+        return "\(time / 3600)h \((time % 3600) / 60)min"
+    }
+    var totalElevationGained: Int {
+        var elevation: Int = 0
+        
+        workouts.forEach { elevation += Int($0.elevationGain) }
+        
+        return elevation
+    }
     
     init() {
         Task { await requestAuthorization() }
@@ -28,25 +70,31 @@ class HealthKitViewModel: ObservableObject {
     
     func fetchAllWorkouts() async {
         do {
-            let workouts = try await HealthKitManager.shared.fetchWorkouts()
+            let fetchedWorkouts = try await HealthKitManager.shared.fetchWorkouts()
             
             
-            for workout in workouts {
+            for workout in fetchedWorkouts {
                 guard let energy = try await HealthKitManager.shared.fetchActiveEnergy(for: workout) else {
                     print("Failed to kcal burned")
-                    return
+                    continue
                 }
                 
                 guard let avgHR = try await HealthKitManager.shared.fetchAverageHeartRate(for: workout) else {
                     print("Failed to get average HR")
-                    return
+                    continue
                 }
                 
                 guard let distance = try await HealthKitManager.shared.fetchDistance(for: workout) else {
                     print("Failed to get distance")
-                    return
+                    continue
                 }
                 
+                guard let elevation = workout.metadata?["HKElevationAscended"] as? HKQuantity else {
+                    print("Failed to get elevation")
+                    continue
+                }
+                
+                let pace: Double = workout.duration / (distance / 1000) / 60
                 let paceMinutesPerMeter: Int = Int(workout.duration / (distance / 1000)) / 60
                 let paceSecondsPerMeter: Int = Int(workout.duration / (distance / 1000)) % 60
 
@@ -59,6 +107,8 @@ class HealthKitViewModel: ObservableObject {
                 print("Workout distance: \(distance) m")
                 print("Workout pace: \(paceMinutesPerMeter)'\(paceSecondsPerMeter)\" min/km")
                 print("---")
+                
+                self.workouts.append(Workout(startDate: workout.startDate, endDate: workout.endDate, avgHR: avgHR, distance: distance, duration: Int(workout.duration), kcalBurned: energy, pace: pace, elevationGain: elevation.doubleValue(for: HKUnit.meter())))
                 
             }
         } catch {
